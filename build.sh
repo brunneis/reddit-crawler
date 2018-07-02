@@ -1,3 +1,2 @@
 #!/bin/bash
-
-docker build -t catenae/rut-links .
+docker build -t brunneis/reddit-crawler .

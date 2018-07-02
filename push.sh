@@ -1,3 +1,2 @@
 #!/bin/bash
-
-docker push catenae/rut-links
+docker push brunneis/reddit-crawler

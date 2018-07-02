@@ -1,7 +1,5 @@
-#!/bin/bash
-
 # Catenae Link
-# Copyright (C) 2017-2018 Rodrigo Martínez <dev@brunneis.com>
+# Copyright (C) 2018 Rodrigo Martínez <dev@brunneis.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,21 +14,11 @@
 
 FROM catenae/link
 
-RUN \
-    pip install --upgrade pip \
-    && pip install pymongo
-
 # Topology links
 COPY \
     crawler_helper.py \
     submission_crawler.py \
-    comment_crawler.py \
-    new_user_filter.py \
-    user_content_crawler.py \
-    post_storer.py /opt/reddit-depression/user-tracker/
-
-# Configuration files
-COPY conf /opt/reddit-depression/user-tracker/conf/
+    comment_crawler.py /opt/reddit-crawler/
 
 COPY entrypoint.sh /
 ENTRYPOINT ["sh", "/entrypoint.sh"]

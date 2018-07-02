@@ -1,2 +1,2 @@
-# erdd-reddit-tracker
+# reddit-crawler
 TO-DO
