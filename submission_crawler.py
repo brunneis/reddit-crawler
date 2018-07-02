@@ -13,18 +13,19 @@ class SubmissionCrawler(Link):
         self.spider_name = rch.get_spider_name('RSC')
         self.wait_seconds = 3 # Max waiting seconds between loops
 
-    def _emit_retrieved(self, submission_id):
+    def _emit_retrieved(self, sumbission_id, subreddit_id):
         self.queue.put(
-            Electron(submission_id,
-                     submission_id,
+            Electron(None,
+                     {'sumbission_id': sumbission_id, 'subreddit_id': subreddit_id},
                      topic=self.output_topics[0]))
 
     def custom_input(self):
         while(True):
             for element in rch.get_all_submissions_elements(self.spider_name,
                                                             items_no=100):
-                submission_id = rch.get_submission_id(element)
-                self._emit_retrieved(submission_id)
+                sumbission_id = rch.get_id(element)
+                subreddit_id = rch.get_subreddit_id(element)
+                self._emit_retrieved(sumbission_id, subreddit_id)
             time.sleep(random.uniform(0, self.wait_seconds))
 
 

@@ -15,8 +15,8 @@ class CommentCrawler(Link):
 
     def _emit_retrieved(self, comment_body):
         self.queue.put(
-            Electron(comment_body,
-                     comment_body,
+            Electron(None,
+                     {'body': comment_body, 'type': 1},
                      topic=self.output_topics[0]))
 
     def custom_input(self):

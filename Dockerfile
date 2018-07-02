@@ -18,6 +18,7 @@ FROM catenae/link
 COPY \
     crawler_helper.py \
     submission_crawler.py \
+    submission_extractor.py \
     comment_crawler.py /opt/reddit-crawler/
 
 COPY entrypoint.sh /

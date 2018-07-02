@@ -7,12 +7,16 @@ case "$1" in
         LINK=submission_crawler.py
         ;;
 
+    submission_extractor)
+        LINK=comment_crawler.py
+        ;;
+
     comment_crawler)
         LINK=comment_crawler.py
         ;;
 
     *)
-        echo "Usage: [submission_crawler | comment_crawler] [ARGS]"
+        echo "Usage: [submission_crawler | submission_extractor | comment_crawler] [ARGS]"
         exit 1
 esac
 
