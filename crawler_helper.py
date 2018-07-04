@@ -7,13 +7,13 @@ import gzip
 import lxml.html
 import traceback
 import random
-
+import logging
 from lxml import etree
-
 import dateutil.parser
 import datetime
 from datetime import timezone, timedelta
 import re
+
 
 # ITEMS #######################################################################
 def get_user_id(element):
@@ -252,13 +252,13 @@ def _get_lxml_from_response(response):
 def _get_all_submissions_url(items_no=100, do_print=False):
     url = 'https://www.reddit.com/r/all/new/.compact?limit=' + str(items_no)
     if do_print:
-        print(url)
+        logging.info(url)
     return url
 
 def _get_all_comments_url(items_no=100, do_print=False):
     url = 'https://www.reddit.com/r/all/comments/.compact?limit=' + str(items_no)
     if do_print:
-        print(url)
+        logging.info(url)
     return url
 
 def _get_user_submissions_url(user_id, items_no=100, do_print=False):
@@ -266,7 +266,7 @@ def _get_user_submissions_url(user_id, items_no=100, do_print=False):
         + user_id
         + '/submitted/.compact?limit=' + str(items_no))
     if do_print:
-        print(url)
+        logging.info(url)
     return url
 
 def _get_submission_url(subreddit_id, submission_id,
@@ -277,7 +277,7 @@ def _get_submission_url(subreddit_id, submission_id,
         + submission_id
         + '/.compact?limit=' + str(items_no))
     if do_print:
-        print(url)
+        logging.info(url)
     return url
 
 def _get_user_comments_url(user_id, items_no=100, do_print=False):
@@ -285,7 +285,7 @@ def _get_user_comments_url(user_id, items_no=100, do_print=False):
         + user_id
         + '/comments/.compact?limit=' + str(items_no))
     if do_print:
-        print(url)
+        logging.info(url)
     return url
 
 def _get_request(url, spider_name):
