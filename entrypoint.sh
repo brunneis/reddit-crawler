@@ -8,7 +8,7 @@ case "$1" in
         ;;
 
     submission_extractor)
-        LINK=comment_crawler.py
+        LINK=submission_extractor.py
         ;;
 
     comment_crawler)
