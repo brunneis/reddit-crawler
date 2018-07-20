@@ -34,7 +34,8 @@ class CommentCrawler(Link):
                 submission_title = rch.get_comment_submission_title(element)
                 subreddit_id = rch.get_comment_subreddit_id(element)
 
-                self._emit_retrieved({'comment_id': comment_id,
+                self._emit_retrieved({'user_id': user_id,
+                                      'comment_id': comment_id,
                                       'body': comment_body,
                                       'timestamp': comment_timestamp,
                                       'submission_id': submission_id,
