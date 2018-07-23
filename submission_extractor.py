@@ -27,6 +27,7 @@ class SubmissionExtractor(Link):
         submission_title = rch.get_submission_title(submission)
         submission_body = rch.get_submission_body(submission)
         submission_timestamp = rch.get_submission_timestamp(submission)
+        submission_url = rch.get_submission_url(submission_id, subreddit_id)
 
         electron = Electron(None,
                             {'user_id': user_id,
@@ -34,9 +35,11 @@ class SubmissionExtractor(Link):
                              'title': submission_title,
                              'body': submission_body,
                              'timestamp': submission_timestamp,
+                             'submission_url': submission_url,
                              'subreddit_id': subreddit_id,
-                             'type': 0})
-
+                             'type': 0,
+                             'src': 'reddit'})
+        print(submission_title)
         return electron
 
 

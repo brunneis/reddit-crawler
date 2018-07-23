@@ -77,10 +77,31 @@ def get_subreddit_id(element):
         + "/a[contains(@class, 'subreddit')]/text()")[0].split('/')[1])
 
 def get_submission_title(element):
-    return str(element.xpath("."
+    return element.xpath("."
         + "/div[@class='entry unvoted']"
         + "/p[@class='title']"
-        + "/a[@class='may-blank']/text()")[0])
+        + "/a[@class='may-blank']"
+        + "/text()")[0].encode('utf-8').decode('utf-8')
+
+def get_content_url(element):
+    """ Returns the URL of the posted content both internal or external links
+    """
+    return str(element.xpath("."
+        + "/a[@class='title']"
+        + "/@href")[0]).split('.compact')[0]
+
+def get_comment_url(element):
+    return 'https://reddit.com' + element.xpath("."
+        + "/div[@class='entry unvoted']"
+        + "/div[@class='clear options_expando hidden']"
+        + "/a"
+        + "/@href")[1].encode('utf-8').decode('utf-8')
+
+def get_submission_url(submission_id, subreddit_id):
+    return f'https://www.reddit.com/r/{subreddit_id}/comments/{submission_id}/'
+
+# def get_submission_url_from_comment_url(element):
+#     return '/'.join(get_comment_url(element).split('/')[:-2]) + '/'
 
 def get_submission_body(element):
     words = " ".join(str(text) for text in element.xpath("."

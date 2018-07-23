@@ -1,6 +1,4 @@
 #!/bin/bash
-DATA_PATH=$(cat DATA_PATH)/kafka
-
 ./build.sh
 docker rm -f kafka submission_crawler submission_extractor comment_crawler 2> /dev/null
 
