@@ -5,6 +5,7 @@ from catenae import Link, Electron, CircularOrderedSet
 import random
 import time
 import crawler_helper as rch
+import logging
 
 
 class CommentCrawler(Link):
@@ -23,7 +24,7 @@ class CommentCrawler(Link):
                     continue
                 self.processed_ids.add(comment_id)
 
-                user_id = rch.get_user_id_from_subreddit(comment)
+                user_id = rch.get_comment_user_id(comment)
                 comment_timestamp = rch.get_comment_timestamp(comment)
                 comment_body = rch.get_comment_body(comment)
                 submission_id = rch.get_comment_submission_id(comment)

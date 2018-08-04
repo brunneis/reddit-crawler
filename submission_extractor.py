@@ -3,6 +3,7 @@
 
 from catenae import Link, Electron, CircularOrderedSet
 import crawler_helper as rch
+import logging
 
 
 class SubmissionExtractor(Link):
@@ -22,24 +23,15 @@ class SubmissionExtractor(Link):
             submission = rch.get_submission_elements(self.spider_name,
                                                      'u_' + subreddit_id,
                                                      submission_id)[0]
+                                                     
+        body = rch.get_submission_body(submission)
+        url = rch.get_submission_url(submission_id, subreddit_id)
 
-        user_id = rch.get_user_id(submission)
-        submission_title = rch.get_submission_title(submission)
-        submission_body = rch.get_submission_body(submission)
-        submission_timestamp = rch.get_submission_timestamp(submission)
-        submission_url = rch.get_submission_url(submission_id, subreddit_id)
+        electron.value['body'] = body
+        electron.value['url'] = url
+        electron.value['type'] = 0
+        electron.value['src'] = 'reddit'
 
-        electron = Electron(None,
-                            {'user_id': user_id,
-                             'submission_id': submission_id,
-                             'title': submission_title,
-                             'body': submission_body,
-                             'timestamp': submission_timestamp,
-                             'submission_url': submission_url,
-                             'subreddit_id': subreddit_id,
-                             'type': 0,
-                             'src': 'reddit'})
-        print(submission_title)
         return electron
 
 

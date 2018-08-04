@@ -1,0 +1,23 @@
+version: '3'
+services:
+  kafka:
+    image: catenae/kafka
+    container_name: kafka
+
+  comment_crawler:
+    image: brunneis/reddit-crawler
+    command: comment_crawler -b kafka:9092 -o new_texts
+    depends_on:
+      - kafka
+
+  submission_crawler:
+    image: brunneis/reddit-crawler
+    command: submission_crawler -b kafka:9092 -o submission_ids
+    depends_on:
+      - kafka
+
+  submission_extractor:
+    image: brunneis/reddit-crawler
+    command: submission_extractor -b kafka:9092 -i submission_ids -o new_texts
+    depends_on:
+      - kafka

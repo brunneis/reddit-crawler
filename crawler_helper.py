@@ -17,44 +17,41 @@ import re
 
 # ITEMS #######################################################################
 def get_user_id(element):
-    try:
-        return str(element.xpath("."
-            + "/div[@class='entry unvoted']"
-            + "/div[@class='tagline']"
-            + "/span"
-            + "/a[contains(@class, 'author')]/text()")[0])
-    except IndexError:
-        pass
+    """ From the list of submissions page. It will fail sometimes from a
+    given submission page
+    """
+    return element.xpath("."
+        + "/div[@class='entry unvoted']"
+        + "/div[@class='tagline']"
+        + "/span"
+        + "/a[contains(@class, 'author')]/text()")[0].encode('utf-8').decode('utf-8')
 
-def get_user_id_from_subreddit(element):
-    try:
-        return str(element.xpath("."
-            + "/div[@class='entry unvoted']"
-            + "/div[@class='tagline']"
-            + "/a[contains(@class, 'author')]/text()")[0])
-    except IndexError:
-        pass
+def get_comment_user_id(element):
+    return element.xpath("."
+        + "/div[@class='entry unvoted']"
+        + "/div[@class='tagline']"
+        + "/a[contains(@class, 'author')]/text()")[0].encode('utf-8').decode('utf-8')
 
 def get_comment_timestamp(element):
     """ This function works only with a "thing" element of a given user_id
     submissions page (it does not work with a certain submission endpoint)
     """
-    time_ago = str(element.xpath("."
+    time_ago = element.xpath("."
         + "/div[@class='entry unvoted']"
         + "/div[@class='tagline']"
-        + "/text()[normalize-space()]")[0]) \
+        + "/text()[normalize-space()]")[0] \
         .replace("[score hidden]", "").strip()
     return _get_timestamp_from_text(time_ago)
 
 def get_submission_timestamp(element):
-    """ This function works only with a "thing" element of a given user_id
-    submissions page (it does not work with a certain submission endpoint)
+    """ From the list of submissions page. It will fail sometimes from a
+    given submission page
     """
-    retrieved_datetime = str(element.xpath("."
+    retrieved_datetime = element.xpath("."
         + "/div[@class='entry unvoted']"
         + "/div[@class='tagline']"
         + "/span"
-        + "/time/@datetime")[0])
+        + "/time/@datetime")[0]
         # + "/time[@class='live-timestamp']")[0].attrib['datetime'])
 
     return int(dateutil.parser.parse(retrieved_datetime) \
@@ -70,13 +67,15 @@ def get_subreddit_id(element):
     """ This function works only with a "thing" element of a given user_id
     submissions page (it does not work with a certain submission endpoint)
     """
-    return str(element.xpath("."
+    return element.xpath("."
         + "/div[@class='entry unvoted']"
         + "/div[@class='tagline']"
         + "/span"
-        + "/a[contains(@class, 'subreddit')]/text()")[0].split('/')[1])
+        + "/a[contains(@class, 'subreddit')]/text()")[0].split('/')[1]
 
 def get_submission_title(element):
+    """ List of submissions page
+    """
     return element.xpath("."
         + "/div[@class='entry unvoted']"
         + "/p[@class='title']"
@@ -86,16 +85,17 @@ def get_submission_title(element):
 def get_content_url(element):
     """ Returns the URL of the posted content both internal or external links
     """
-    return str(element.xpath("."
+    return element.xpath("."
         + "/a[@class='title']"
-        + "/@href")[0]).split('.compact')[0]
+        + "/@href")[0] \
+        .split('.compact')[0]
 
 def get_comment_url(element):
     return 'https://reddit.com' + element.xpath("."
         + "/div[@class='entry unvoted']"
         + "/div[@class='clear options_expando hidden']"
         + "/a"
-        + "/@href")[1].encode('utf-8').decode('utf-8')
+        + "/@href")[1]
 
 def get_submission_url(submission_id, subreddit_id):
     return f'https://www.reddit.com/r/{subreddit_id}/comments/{submission_id}/'
@@ -104,7 +104,7 @@ def get_submission_url(submission_id, subreddit_id):
 #     return '/'.join(get_comment_url(element).split('/')[:-2]) + '/'
 
 def get_submission_body(element):
-    words = " ".join(str(text) for text in element.xpath("."
+    words = " ".join(text for text in element.xpath("."
         + "/div[@class='expando']"
         + "/form[@class='usertext']"
         + "/div[@class='usertext-body']"
@@ -115,7 +115,7 @@ def get_comment_id(element):
     return _get_id(element)
 
 def get_comment_body(element):
-    words = " ".join(str(text) for text in element.xpath("."
+    words = " ".join(text for text in element.xpath("."
         + "/div[@class='entry unvoted']"
         + "/form[@class='usertext']"
         + "/div[@class='usertext-body']"
@@ -123,26 +123,28 @@ def get_comment_body(element):
     return " ".join(words)
 
 def get_comment_subreddit_id(element):
-    return str(element.xpath("."
+    return element.xpath("."
         + "/div[@class='entry unvoted']"
         + "/div[contains(@class, 'options_expando')]"
         + "/a"
-        + "/@href")[1]).split("/")[2]
+        + "/@href")[1] \
+        .split("/")[2]
 
 def get_comment_submission_id(element):
-    return str(element.xpath("."
+    return element.xpath("."
         + "/div[@class='entry unvoted']"
         + "/div[contains(@class, 'options_expando')]"
         + "/a"
-        + "/@href")[1]).split("/")[4]
+        + "/@href")[1] \
+        .split("/")[4]
 
 def get_comment_submission_title(element):
-    return str(element.xpath("."
-        + "/a[@class='title']/text()")[0])
+    return element.xpath("."
+        + "/a[@class='title']/text()")[0].encode('utf-8').decode('utf-8')
 
 ###############################################################################
 def _get_id(element):
-    return str((list(element.classes)[2].split('_')[1]))
+    return list(element.classes)[2].split('_')[1]
 
 def _get_timestamp_from_text(time_ago):
     # datetime.today() with tzinfo None (UTC)
@@ -264,10 +266,11 @@ def _get_submission_lxml(spider_name, subreddit_id, submission_id,
     return _get_lxml_from_response(response)
 
 ###############################################################################
+utf8_parser = etree.XMLParser(encoding='utf-8')
 def _get_lxml_from_response(response):
     if response.info().get('Content-Encoding') == 'gzip':
-        f = gzip.GzipFile(fileobj=response)
-        return lxml.html.document_fromstring(f.read())
+        html_string = gzip.GzipFile(fileobj=response).read()
+        return lxml.html.document_fromstring(html_string)
 
 ###############################################################################
 def _get_all_submissions_url(items_no=100, do_print=False):
