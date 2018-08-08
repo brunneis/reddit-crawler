@@ -178,14 +178,16 @@ def get_all_submissions_elements(spider_name, items_no=100):
     try:
         doc = _get_all_submissions_lxml(spider_name, items_no=items_no)
         return doc.xpath("//div[contains(@class, 'thing')]")
-    except:
+    except Exception as e:
+        logging.error(str(e))
         return []
 
 def get_all_comments_elements(spider_name, items_no=100):
     try:
         doc = _get_all_comments_lxml(spider_name, items_no=items_no)
         return doc.xpath("//div[contains(@class, 'thing')]")
-    except:
+    except Exception as e:
+        logging.error(str(e))
         return []
 
 def get_user_submissions_elements(spider_name, user_id,
@@ -195,7 +197,8 @@ def get_user_submissions_elements(spider_name, user_id,
                                          user_id,
                                          items_no=items_no)
         return doc.xpath("//div[contains(@class, 'thing')]")
-    except:
+    except Exception as e:
+        logging.error(str(e))
         return []
 
 def get_user_comments_elements(spider_name, user_id,
@@ -205,7 +208,8 @@ def get_user_comments_elements(spider_name, user_id,
                                       user_id,
                                       items_no=items_no)
         return doc.xpath("//div[contains(@class, 'thing')]")
-    except:
+    except Exception as e:
+        logging.error(str(e))
         return []
 
 def get_submission_elements(spider_name, subreddit_id, submission_id,
@@ -217,14 +221,15 @@ def get_submission_elements(spider_name, subreddit_id, submission_id,
                                    submission_id,
                                    items_no=items_no)
         return doc.xpath("//div[contains(@class, 'thing')]")
-    except urllib.error.HTTPError:
+    except Exception as e:
+        logging.error(str(e))
         return []
 
 def get_spider_name(crawler_name):
     # spider_name = crawler_name + "_test"
     spider_name = crawler_name + "_" \
        + "".join([str(random.randrange(10)) for i in range(5-1)])
-    print(spider_name)
+    logging.info(spider_name)
     return spider_name
 
 ###############################################################################
@@ -266,7 +271,6 @@ def _get_submission_lxml(spider_name, subreddit_id, submission_id,
     return _get_lxml_from_response(response)
 
 ###############################################################################
-utf8_parser = etree.XMLParser(encoding='utf-8')
 def _get_lxml_from_response(response):
     if response.info().get('Content-Encoding') == 'gzip':
         html_string = gzip.GzipFile(fileobj=response).read()

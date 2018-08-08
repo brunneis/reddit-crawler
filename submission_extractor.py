@@ -23,7 +23,7 @@ class SubmissionExtractor(Link):
             submission = rch.get_submission_elements(self.spider_name,
                                                      'u_' + subreddit_id,
                                                      submission_id)[0]
-                                                     
+
         body = rch.get_submission_body(submission)
         url = rch.get_submission_url(submission_id, subreddit_id)
 
@@ -32,8 +32,11 @@ class SubmissionExtractor(Link):
         electron.value['type'] = 0
         electron.value['src'] = 'reddit'
 
+        logging.debug(electron.value)
+
         return electron
 
 
 if __name__ == "__main__":
     SubmissionExtractor().start()
+    # SubmissionExtractor(log_level='DEBUG').start()

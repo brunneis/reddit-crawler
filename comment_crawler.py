@@ -46,9 +46,11 @@ class CommentCrawler(Link):
                                      'type': 1,
                                      'src': 'reddit'},
                                     topic=self.output_topics[0])
+                logging.debug(electron.value)
                 self.queue.put(electron)
             time.sleep(random.uniform(0, self.wait_seconds))
 
 
 if __name__ == "__main__":
     CommentCrawler().start(link_mode=Link.CUSTOM_INPUT)
+    # CommentCrawler(log_level='DEBUG').start(link_mode=Link.CUSTOM_INPUT)
