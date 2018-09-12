@@ -32,11 +32,8 @@ class SubmissionExtractor(Link):
         electron.value['type'] = 0
         electron.value['src'] = 'reddit'
 
-        logging.debug(electron.value)
-
         return electron
 
 
 if __name__ == "__main__":
     SubmissionExtractor().start()
-    # SubmissionExtractor(log_level='DEBUG').start()

@@ -1,23 +1,32 @@
-version: '3'
+version: '3.4'
+
+x-logging: &default-logging
+  options:
+    max-size: '10m'
+    max-file: '5'
+  driver: json-file
+
 services:
   kafka:
     image: catenae/kafka
-    container_name: kafka
 
   comment_crawler:
     image: brunneis/reddit-crawler
-    command: comment_crawler -b kafka:9092 -o new_texts
+    command: comment_crawler -k kafka:9092 -o new_texts
+    logging: *default-logging
     depends_on:
       - kafka
 
   submission_crawler:
     image: brunneis/reddit-crawler
-    command: submission_crawler -b kafka:9092 -o submission_ids
+    command: submission_crawler -k kafka:9092 -o submission_ids
+    logging: *default-logging
     depends_on:
       - kafka
 
   submission_extractor:
     image: brunneis/reddit-crawler
-    command: submission_extractor -b kafka:9092 -i submission_ids -o new_texts
+    command: submission_extractor -k kafka:9092 -i submission_ids -o new_texts
+    logging: *default-logging
     depends_on:
       - kafka

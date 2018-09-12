@@ -15,7 +15,7 @@ class CommentCrawler(Link):
         self.processed_ids = CircularOrderedSet(1000)
         self.wait_seconds = 3 # Max waiting seconds between loops
 
-    def custom_input(self):
+    def generator(self):
         while(True):
             for comment in rch.get_all_comments_elements(self.spider_name,
                                                          items_no=100):
@@ -46,11 +46,9 @@ class CommentCrawler(Link):
                                      'type': 1,
                                      'src': 'reddit'},
                                     topic=self.output_topics[0])
-                logging.debug(electron.value)
-                self.queue.put(electron)
+                self.send(electron)
             time.sleep(random.uniform(0, self.wait_seconds))
 
 
 if __name__ == "__main__":
     CommentCrawler().start(link_mode=Link.CUSTOM_INPUT)
-    # CommentCrawler(log_level='DEBUG').start(link_mode=Link.CUSTOM_INPUT)

@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-FROM catenae/link
+FROM catenae/link:0.1.0
 
 # Topology links
 COPY \
