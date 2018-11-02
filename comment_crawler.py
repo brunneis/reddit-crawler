@@ -46,6 +46,7 @@ class CommentCrawler(Link):
                                      'type': 1,
                                      'src': 'reddit'},
                                     topic=self.output_topics[0])
+                logging.info(electron.value)
                 self.send(electron)
             time.sleep(random.uniform(0, self.wait_seconds))
 

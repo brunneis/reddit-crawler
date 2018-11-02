@@ -17,22 +17,28 @@ import re
 
 # ITEMS #######################################################################
 def get_user_id(element):
-    """ From the list of submissions page. It will fail sometimes from a
-    given submission page
-    """
-    return element.xpath("."
-        + "/div[@class='entry unvoted']"
-        + "/div[@class='tagline']"
-        + "/span"
-        + "/a[contains(@class, 'author')]/text()")[0].encode('utf-8').decode('utf-8')
+    try:
+        return element.xpath("."
+            + "/div[@class='entry unvoted']"
+            + "/div[@class='tagline']"
+            + "/span"
+            + "/a[contains(@class, 'author')]/text()")[0].encode('utf-8').decode('utf-8')
+    # Post written by a deleted user
+    except IndexError:
+        return
 
 def get_comment_user_id(element):
-    return element.xpath("."
-        + "/div[@class='entry unvoted']"
-        + "/div[@class='tagline']"
-        + "/a[contains(@class, 'author')]/text()")[0].encode('utf-8').decode('utf-8')
+    try:
+        return element.xpath("."
+            + "/div[@class='entry unvoted']"
+            + "/div[@class='tagline']"
+            + "/a[contains(@class, 'author')]/text()")[0].encode('utf-8').decode('utf-8')
+    # Post written by a deleted user
+    except IndexError:
+        return
 
 def get_comment_timestamp(element):
+    # TODO revisar score hidden
     """ This function works only with a "thing" element of a given user_id
     submissions page (it does not work with a certain submission endpoint)
     """
@@ -63,15 +69,24 @@ def get_submission_id(element):
     """
     return _get_id(element)
 
-def get_subreddit_id(element):
+def get_subreddit_id(element, retrieve_user_if_not_subreddit=False):
     """ This function works only with a "thing" element of a given user_id
     submissions page (it does not work with a certain submission endpoint)
     """
-    return element.xpath("."
-        + "/div[@class='entry unvoted']"
-        + "/div[@class='tagline']"
-        + "/span"
-        + "/a[contains(@class, 'subreddit')]/text()")[0].split('/')[1]
+    try:
+        subreddit = element.xpath("."
+            + "/div[@class='entry unvoted']"
+            + "/div[@class='tagline']"
+            + "/span"
+            + "/a[contains(@class, 'subreddit')]/text()")[0]
+        type, subreddit = subreddit.split('/')
+        if type == 'r':
+            return subreddit
+        # The text was posted to the user's profile (no subreddit)
+        elif type == 'u' and retrieve_user_if_not_subreddit:
+            return f'u/{subreddit}'
+    except IndexError:
+        return
 
 def get_submission_title(element):
     """ List of submissions page
@@ -110,6 +125,20 @@ def get_submission_body(element):
         + "/div[@class='usertext-body']"
         + "/div[@class='md']//text()")).split()
     return " ".join(words)
+
+def get_submission_score(element):
+    return element.xpath("."
+        + "/div[@class='entry unvoted']"
+        + "/div[@class='tagline']"
+        + "/span"
+        + "/span[@class='score unvoted']"
+        + "/@title")[0]
+
+def get_submission_no_comments(element):
+    return element.xpath("."
+        + "/div[@class='commentcount']"
+        + "/a"
+        + "/text()")[0].encode('utf-8').decode('utf-8')
 
 def get_comment_id(element):
     return _get_id(element)
@@ -175,19 +204,25 @@ def _get_timestamp_from_text(time_ago):
 
 ###############################################################################
 def get_all_submissions_elements(spider_name, items_no=100):
+    return get_subreddit_submissions_elements('all', spider_name, items_no)
+
+def get_subreddit_submissions_elements(subreddit='all', spider_name=None, items_no=100):
     try:
-        doc = _get_all_submissions_lxml(spider_name, items_no=items_no)
+        doc = _get_subreddit_submissions_lxml(subreddit, spider_name, items_no)
         return doc.xpath("//div[contains(@class, 'thing')]")
-    except Exception as e:
-        logging.error(str(e))
+    except Exception:
+        logging.exception('message')
         return []
 
 def get_all_comments_elements(spider_name, items_no=100):
+    return get_subreddit_comments_elements('all', spider_name, items_no)
+
+def get_subreddit_comments_elements(subreddit='all', spider_name=None, items_no=100):
     try:
-        doc = _get_all_comments_lxml(spider_name, items_no=items_no)
+        doc = _get_subreddit_comments_lxml(subreddit, spider_name, items_no)
         return doc.xpath("//div[contains(@class, 'thing')]")
-    except Exception as e:
-        logging.error(str(e))
+    except Exception:
+        logging.exception('message')
         return []
 
 def get_user_submissions_elements(spider_name, user_id,
@@ -195,10 +230,10 @@ def get_user_submissions_elements(spider_name, user_id,
     try:
         doc = _get_user_submissions_lxml(spider_name,
                                          user_id,
-                                         items_no=items_no)
+                                         items_no)
         return doc.xpath("//div[contains(@class, 'thing')]")
-    except Exception as e:
-        logging.error(str(e))
+    except Exception:
+        logging.exception('message')
         return []
 
 def get_user_comments_elements(spider_name, user_id,
@@ -206,10 +241,10 @@ def get_user_comments_elements(spider_name, user_id,
     try:
         doc = _get_user_comments_lxml(spider_name,
                                       user_id,
-                                      items_no=items_no)
+                                      items_no)
         return doc.xpath("//div[contains(@class, 'thing')]")
-    except Exception as e:
-        logging.error(str(e))
+    except Exception:
+        logging.exception('message')
         return []
 
 def get_submission_elements(spider_name, subreddit_id, submission_id,
@@ -219,10 +254,10 @@ def get_submission_elements(spider_name, subreddit_id, submission_id,
         doc = _get_submission_lxml(spider_name,
                                    subreddit_id,
                                    submission_id,
-                                   items_no=items_no)
+                                   items_no)
         return doc.xpath("//div[contains(@class, 'thing')]")
-    except Exception as e:
-        logging.error(str(e))
+    except Exception:
+        logging.exception('message')
         return []
 
 def get_spider_name(crawler_name):
@@ -233,31 +268,30 @@ def get_spider_name(crawler_name):
     return spider_name
 
 ###############################################################################
-def _get_all_submissions_lxml(spider_name, items_no=100):
+
+def _get_subreddit_submissions_lxml(subreddit='all', spider_name=None, items_no=100):
     response = urlopen(_get_request(
-        _get_all_submissions_url(items_no=items_no),
+        _get_subreddit_submissions_url(subreddit, items_no),
         spider_name))
     return _get_lxml_from_response(response)
 
-def _get_all_comments_lxml(spider_name, items_no=100):
+def _get_subreddit_comments_lxml(subreddit='all', spider_name=None, items_no=100):
     response = urlopen(_get_request(
-        _get_all_comments_url(items_no=items_no),
+        _get_subreddit_comments_url(subreddit, items_no),
         spider_name))
     return _get_lxml_from_response(response)
 
 def _get_user_submissions_lxml(spider_name, user_id,
     items_no=100):
     response = urlopen(_get_request(
-        _get_user_submissions_url(user_id,
-                                  items_no=items_no),
+        _get_user_submissions_url(user_id, items_no),
         spider_name))
     return _get_lxml_from_response(response)
 
 def _get_user_comments_lxml(spider_name, user_id,
     items_no=100):
     response = urlopen(_get_request(
-        _get_user_comments_url(user_id,
-                               items_no=items_no),
+        _get_user_comments_url(user_id, items_no),
         spider_name))
     return _get_lxml_from_response(response)
 
@@ -266,7 +300,7 @@ def _get_submission_lxml(spider_name, subreddit_id, submission_id,
     response = urlopen(_get_request(
         _get_submission_url(subreddit_id,
                             submission_id,
-                            items_no=items_no),
+                            items_no),
         spider_name))
     return _get_lxml_from_response(response)
 
@@ -277,43 +311,33 @@ def _get_lxml_from_response(response):
         return lxml.html.document_fromstring(html_string)
 
 ###############################################################################
-def _get_all_submissions_url(items_no=100, do_print=False):
-    url = 'https://www.reddit.com/r/all/new/.compact?limit=' + str(items_no)
-    if do_print:
-        logging.info(url)
+
+def _get_subreddit_submissions_url(subreddit='all', items_no=100, sort='new'):
+    url = f'https://www.reddit.com/r/{subreddit}/{sort}/.compact?limit={items_no}'
     return url
 
-def _get_all_comments_url(items_no=100, do_print=False):
-    url = 'https://www.reddit.com/r/all/comments/.compact?limit=' + str(items_no)
-    if do_print:
-        logging.info(url)
+def _get_subreddit_comments_url(subreddit='all', items_no=100):
+    url = f'https://www.reddit.com/r/{subreddit}/comments/.compact?limit={items_no}'
     return url
 
-def _get_user_submissions_url(user_id, items_no=100, do_print=False):
+def _get_user_submissions_url(user_id, items_no=100):
     url = ('https://www.reddit.com/user/'
         + user_id
         + '/submitted/.compact?limit=' + str(items_no))
-    if do_print:
-        logging.info(url)
     return url
 
-def _get_submission_url(subreddit_id, submission_id,
-                        items_no=500, do_print=False):
+def _get_submission_url(subreddit_id, submission_id, items_no=500):
     url = ('https://www.reddit.com/r/'
         + subreddit_id
         + '/comments/'
         + submission_id
         + '/.compact?limit=' + str(items_no))
-    if do_print:
-        logging.info(url)
     return url
 
-def _get_user_comments_url(user_id, items_no=100, do_print=False):
+def _get_user_comments_url(user_id, items_no=100):
     url = ('https://www.reddit.com/user/'
         + user_id
         + '/comments/.compact?limit=' + str(items_no))
-    if do_print:
-        logging.info(url)
     return url
 
 def _get_request(url, spider_name):

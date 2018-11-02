@@ -24,7 +24,10 @@ class SubmissionCrawler(Link):
                     continue
                 self.processed_ids.add(submission_id)
 
-                subreddit_id = rch.get_subreddit_id(submission)
+                subreddit_id = rch.get_subreddit_id(
+                    submission,
+                    retrieve_user_if_not_subreddit=True)
+
                 user_id = rch.get_user_id(submission)
                 timestamp = rch.get_submission_timestamp(submission)
                 title = rch.get_submission_title(submission)

@@ -14,15 +14,13 @@ class SubmissionExtractor(Link):
     def transform(self, electron):
         submission_id = electron.value['submission_id']
         subreddit_id = electron.value['subreddit_id']
-        try:
-            submission = rch.get_submission_elements(self.spider_name,
-                                                     subreddit_id,
-                                                     submission_id)[0]
-        except IndexError:
-            # Sometimes the prefix 'u_' is needed for the username
-            submission = rch.get_submission_elements(self.spider_name,
-                                                     'u_' + subreddit_id,
-                                                     submission_id)[0]
+
+        submissions = rch.get_submission_elements(self.spider_name,
+                                                  subreddit_id,
+                                                  submission_id)
+        if not submissions:
+            return
+        submission = submissions[0]
 
         body = rch.get_submission_body(submission)
         url = rch.get_submission_url(submission_id, subreddit_id)
