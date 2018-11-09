@@ -38,7 +38,7 @@ class CommentCrawler(Link):
                                      'comment_id': comment_id,
                                      'body': comment_body,
                                      'timestamp': comment_timestamp,
-                                     'comment_url': comment_url,
+                                     'url': comment_url,
                                      'submission_id': submission_id,
                                      'submission_title': submission_title,
                                      'subreddit_id': subreddit_id,
