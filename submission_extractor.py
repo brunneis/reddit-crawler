@@ -7,7 +7,6 @@ import logging
 
 
 class SubmissionExtractor(Link):
-
     def setup(self):
         self.spider_name = rch.get_spider_name('RSE')
 
@@ -15,9 +14,7 @@ class SubmissionExtractor(Link):
         submission_id = electron.value['submission_id']
         subreddit_id = electron.value['subreddit_id']
 
-        submissions = rch.get_submission_elements(self.spider_name,
-                                                  subreddit_id,
-                                                  submission_id)
+        submissions = rch.get_submission_elements(self.spider_name, subreddit_id, submission_id)
         if not submissions:
             return
         submission = submissions[0]

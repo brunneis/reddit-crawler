@@ -9,34 +9,32 @@ import logging
 
 
 class SubmissionCrawler(Link):
-
     def setup(self):
         self.spider_name = rch.get_spider_name('RSC')
         self.processed_ids = CircularOrderedSet(1000)
-        self.wait_seconds = 3 # Max waiting seconds between loops
+        self.wait_seconds = 3  # Max waiting seconds between loops
 
     def generator(self):
-        while(True):
-            for submission in rch.get_all_submissions_elements(self.spider_name,
-                                                            items_no=100):
+        while (True):
+            for submission in rch.get_all_submissions_elements(self.spider_name, items_no=100):
                 submission_id = rch.get_submission_id(submission)
                 if submission_id in self.processed_ids:
                     continue
                 self.processed_ids.add(submission_id)
 
-                subreddit_id = rch.get_subreddit_id(
-                    submission,
-                    retrieve_user_if_not_subreddit=True)
+                subreddit_id = rch.get_subreddit_id(submission, retrieve_user_if_not_subreddit=True)
 
                 user_id = rch.get_user_id(submission)
                 timestamp = rch.get_submission_timestamp(submission)
                 title = rch.get_submission_title(submission)
 
-                value = {'submission_id': submission_id,
-                         'subreddit_id': subreddit_id,
-                         'user_id': user_id,
-                         'timestamp': timestamp,
-                         'title': title}
+                value = {
+                    'submission_id': submission_id,
+                    'subreddit_id': subreddit_id,
+                    'user_id': user_id,
+                    'timestamp': timestamp,
+                    'title': title
+                }
                 electron = Electron(None, value, topic=self.output_topics[0])
                 self.send(electron)
 
@@ -44,4 +42,4 @@ class SubmissionCrawler(Link):
 
 
 if __name__ == "__main__":
-    SubmissionCrawler().start(link_mode=Link.CUSTOM_INPUT)
+    SubmissionCrawler(link_mode=Link.CUSTOM_INPUT).start()
