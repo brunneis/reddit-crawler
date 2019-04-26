@@ -27,6 +27,8 @@ class SubmissionExtractor(Link):
         electron.value['type'] = 0
         electron.value['src'] = 'reddit'
 
+        logging.info(electron.value)
+
         return electron
 
 
