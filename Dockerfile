@@ -12,14 +12,16 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-FROM catenae/link:test
+FROM catenae/link:develop
 
 # Topology links
 COPY \
+    env.py \
     crawler_helper.py \
     submission_crawler.py \
     submission_extractor.py \
-    comment_crawler.py /opt/reddit-crawler/
+    comment_crawler.py \
+    stats.py /opt/reddit-crawler/
 
 COPY entrypoint.sh /
 ENTRYPOINT ["sh", "/entrypoint.sh"]

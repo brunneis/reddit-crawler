@@ -15,8 +15,12 @@ case "$1" in
         LINK=comment_crawler.py
         ;;
 
+    stats)
+        LINK=stats.py
+        ;;
+
     *)
-        echo "Usage: [submission_crawler | submission_extractor | comment_crawler] [ARGS]"
+        echo "Usage: [submission_crawler | submission_extractor | comment_crawler | stats] [ARGS]"
         exit 1
 esac
 

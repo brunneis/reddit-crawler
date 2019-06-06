@@ -6,13 +6,14 @@ import random
 import time
 import crawler_helper as rch
 import logging
+from env import MAX_WAIT_SECONDS
 
 
 class CommentCrawler(Link):
     def setup(self):
         self.spider_name = rch.get_spider_name('RCC')
         self.processed_ids = CircularOrderedSet(1000)
-        self.wait_seconds = 3  # Max waiting seconds between loops
+        self.wait_seconds = MAX_WAIT_SECONDS  # Max waiting seconds between loops
 
     def generator(self):
         while (True):
@@ -51,4 +52,4 @@ class CommentCrawler(Link):
 
 
 if __name__ == "__main__":
-    CommentCrawler(link_mode=Link.CUSTOM_INPUT).start()
+    CommentCrawler().start()

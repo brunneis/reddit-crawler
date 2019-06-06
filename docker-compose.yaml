@@ -30,3 +30,10 @@ services:
     logging: *default-logging
     depends_on:
       - kafka
+
+  stats:
+    image: brunneis/reddit-crawler
+    command: stats -k kafka:9092 -i new_texts,submission_ids
+    logging: *default-logging
+    depends_on:
+      - kafka
