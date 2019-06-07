@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from catenae import Link, Electron
+from catenae import Link, Electron, utils
 from threading import Lock
 
 
@@ -22,6 +22,8 @@ class Stats(Link):
             'current_posts_per_second': 0,
             'max_posts_per_second': 0
         }
+
+        self.start_timestamp = utils.get_timestamp()
 
         self.loop(self.take_measure, interval=Stats.MEASURE_INTERVAL)
         self.loop(self.show_stats, interval=Stats.MEASURE_INTERVAL - 1)
@@ -45,9 +47,11 @@ class Stats(Link):
     def show_stats(self):
         self.logger.log()
         self.logger.log('=== STATS ===')
-        self.logger.log(f"AVG posts/s: {self.metrics['avg_posts_per_second']}")
-        self.logger.log(f"CUR posts/s: {self.metrics['current_posts_per_second']}")
-        self.logger.log(f"MAX posts/s: {self.metrics['max_posts_per_second']}")
+        self.logger.log(f"Total posts    : {self.total_posts_counter}")
+        self.logger.log(f"Elapsed hours  : {(utils.get_timestamp() - self.start_timestamp) / 3600}")
+        self.logger.log(f"Avg. posts/s   : {self.metrics['avg_posts_per_second']}")
+        self.logger.log(f"Curr. posts/s  : {self.metrics['current_posts_per_second']}")
+        self.logger.log(f"Max posts/s    : {self.metrics['max_posts_per_second']}")
         self.logger.log('=============\n')
 
     def countable_post(self, electron):
